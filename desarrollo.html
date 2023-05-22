@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Desenvolupament del projecte</title>
+    <link href="css/styledesarrollo.css" rel="stylesheet" type="text/css">
+</head>
+<body>
+    <nav>
+        <div class="logo">
+            <a href="portada.html"><img class="logop" src="img/logopuig.png" alt="logoelpuig"></a>
+        </div>
+        <ul class="nav-links"> 
+            <a href="portada.html">Inici</a>
+            <a href="manual.html">Manual d'usuari</a> 
+            <a href="contacto.html">Contacte</a>
+        </ul>
+    </nav>
+    <div class="titulocalc">
+        <h2>Calculadora Arduino ®</h2>
+    </div>
+    <h2 class="des">Desenvolupament del projecte</h2>
+    <div class="cuerpo">
+        <h3 class="materiales">Materials</h3>
+            <ul class="tablaimagenes">
+                <li>
+                    Placa Arduino Uno Rev3
+                    <br>
+                    <img class="imagen" src="img/placaarduino.jpg" alt="placa arduino">
+                </li>
+                <li>
+                    Baterías 9v
+                    <br>
+                    <img class="imagen" src="img/baterias.jpg" alt="baterias">
+                </li>
+                <li>
+                    Cable conector batería 9v
+                    <br>
+                    <img class="imagen" src="img/cablebateria.jpg" alt="cablebateria">
+                </li>
+                <li>
+                    Cable conector USB 2.0
+                    <br>
+                    <img class="imagen" src="img/conectorusb2.jpg" alt="conector usb 2.0">
+                </li>
+                <li>
+                    Módulo I2C Arduino
+                    <br>
+                    <img class="imagen" src="img/i2c.jpg" alt="i2c">
+                </li>
+                <li>
+                    Jumperwires
+                    <br>
+                    <img class="imagen" src="img/jumperwires.jpg" alt="jumperwires">
+                </li>
+                <li>
+                    Keypad 4x4
+                    <br>
+                    <img class="imagen" src="img/keypad.jpg" alt="keypad 4x4">
+                </li>
+                <li>
+                    LCD 2x16
+                    <br>
+                    <img class="imagen" src="img/lcd.jpg" alt="lcd">
+                </li>
+            </ul>
+        <h3 class="montaje">Muntatge</h3>
+            <div class="cuerpomont">
+                <ol>
+                    <li class="numeracion">
+                        Agafarem la caixa de cartró on posarem tots els components.
+                        <br>
+                        <img class="imagen2" src="img/caja.jpg" alt="caja">
+                    </li>
+                    <li class="numeracion">
+                        Ara podem continuar posant la placa Arduino on toca.
+                        <br>
+                        <img class="imagen2" src="img/montaje1.jpg" alt="caja con arduino">
+                    </li>
+                    <li class="numeracion">
+                        A continuació farem un forat a la caixa on anirà el nostre display lcd 2x16.
+                        <br>
+                        <img class="imagen2" src="img/montaje2.jpg" alt="caja con agujero">
+                    </li>
+                    <li class="numeracion">
+                        Posarem el display dins el forat y conectarem, GND (I2C) amb GND (arduino), 
+                        VCC (I2C) amb 5V (arduino), SDA (I2C) amb A4 (arduino) i SCL (I2C) amb A5 (arduino). 
+                        <br>
+                        <img class="imagen2" src="img/montaje3.jpg" alt="display puesto">
+                    </li>
+                    <li class="numeracion">
+                        Conectarem el keypad 4x4 al arduino als següents pins, 0-7.
+                        <br>
+                        <img class="imagen2" src="img/montaje4.jpg" alt="conectores keypad">
+                        <img class="imagen2" src="img/montaje5.jpg">
+                    </li>
+                    <li class="numeracion">
+                        El keypad 4x4 ha de quedar de la manera següent.
+                        L'enganxaré per què es quedi fixe en aquesta posició. 
+                        <br>
+                        <img class="imagen2" src="img/montaje6.jpg" alt="keypad puesto">
+                    </li>
+                    <li class="numeracion">
+                        Connectarem el cable connector de la pila amb la batería de 9V.
+                        <br>
+                        <img class="imagen2" src="img/montaje7.jpg" alt="bateria conectada">
+                    </li>
+                    <li class="numeracion">
+                        Ara podem connectar el cable connector de la pila amb el connector jack de l'arduino.
+                        <br>
+                        <img class="imagen2" src="img/montaje8.jpg" alt="bateria conectada a la placa">
+                    </li>
+                    <li class="numeracion">
+                        Aixì quedaríen les conexions. Ara ja tenim la calculadora funcionant. 
+                        <br>
+                        <img class="imagen2" src="img/montaje9.jpg" alt="conexiones arduino">
+                    </li>
+                </ol>
+            </div>
+        <h3 class="codigotitulo">Codi Arduino</h3>
+            <div class="terminal">
+#include &lt;Key.h&gt;
+#include &lt;Keypad.h&gt;
+#include &lt;Wire.h&gt;
+#include &lt;hd44780.h&gt;                       // main hd44780 header
+#include &lt;hd44780ioClass/hd44780_I2Cexp.h&gt; // i2c expander i/o class header
+
+//LCD I2C inicialización
+hd44780_I2Cexp lcd; // declarar objeto lcd: localización automática y chip expansor de configuración
+// geometría LCD
+const int LCD_COLS = 16;
+const int LCD_ROWS = 2;
+double num1,num2 ;
+double total;
+char operation,button;
+const byte ROWS = 4; // Four rows
+const byte COLS = 4; // Three columns
+
+// Definir el mapa de teclas
+char keys[ROWS][COLS] = {
+    {'1','2','3','+'},
+    {'4','5','6','-'},
+    {'7','8','9','*'},
+    {'=','0','%','/'}
+};
+byte rowPins[ROWS] = { 7, 6, 5, 4 };// Conecte el teclado ROW0, ROW1, ROW2 y ROW3 a estos pines Arduino.
+byte colPins[COLS] = { 3, 2, 1, 0 }; // Conecte el teclado COL0, COL1 y COL2 a estos pines Arduino.
+
+Keypad kpd = Keypad( makeKeymap(keys), rowPins, colPins, ROWS, COLS ); //  Crear el teclado
+
+void domath() // Caso de interruptor simple para elegir qué operación hacer, según el botón presionado por el usuario.
+{
+    switch(operation)
+    {
+    case '+': // Suma
+        total = num1+num2;
+        break;
+    case '-': // Resta 
+        total = num1-num2;
+        break;
+    case '/': // Division
+        total = num1/num2;
+        break;
+    case '*': // Multiplicación
+        total = num1*num2;
+        break;
+        case '%': // Porcentaje
+        total = (int)num1%(int)num2;
+        break;
+    }
+    // Basado en el caso seleccionado imprime resultado total y 
+    lcd.setCursor(0,1);
+    lcd.print('=');
+    lcd.setCursor(1,1);
+    lcd.print(total);
+}
+
+void setup() {
+int status;
+
+    // inicializar LCD con número de columnas y filas: 
+    // hd44780 devuelve un estado de begin() que se puede usar para determinar si la inicialización ha fallado.
+    status = lcd.begin(LCD_COLS, LCD_ROWS);
+    if(status) // el estado distinto de cero significa que no tuvo éxito
+    {
+    status = -status; // convertir el valor de estado negativo en un número positivo
+
+    // begin () ha fallado, así que parpadeeará el código de error usando el LED integrado si es posible
+    hd44780::fatalError(status); // does not return
+    }
+
+    // la inicialización fue exitosa, la luz de fondo debería estar encendida ahora
+    
+    // Imprimir un mensaje en la pantalla LCD
+    lcd.print("Calculator Davide");
+}
+
+void loop()
+{
+    // Los bucles son convenientes para leer la pulsación de tecla desde el teclado
+    while(1) // Primer bucle. Composición del primer número. Hasta que el operador presionó
+    {
+    button = kpd.getKey(); // Botón de lectura
+    if (button >='0' && button <='9') // Si el usuario presionó un valor numérico, 1 carácter a la vez.
+    {
+        lcd.clear();
+        num1 = num1*10 + (button -'0'); //Composición del primer operando
+        lcd.setCursor(0,0); // Seleccione la primera fila en LCD
+        lcd.print(num1); // Imprimir número num1
+    }
+    
+    //Operador de entrada(
+    if (num1 !=0 && (button=='+' || button=='-' || button=='*' || button=='/' || button=='%'))
+    {
+        operation = button; // operación recuerda qué operación matemática quiere el usuario en los números
+        lcd.setCursor(0,1); // coloque el cursor en la fila 2
+        lcd.print(operation); // Imprimir nuestra operación
+        break;
+    }
+    }
+    
+    while(1) // Segundo bucle. Introducción del segundo operando. Hasta que se presiona '='
+    {
+    button = kpd.getKey(); // Lectura de tecla
+    if (button >='0' && button <='9') // Obtener caracteres del teclado para el segundo número
+    {
+        num2 = num2*10 + (button -'0'); //Composición de la segunda operación
+        lcd.setCursor(1,1); // Seleccione la segunda fila, la segunda columna en LCD
+        lcd.print(num2); // Imprimir operación actual2
+    }
+
+    if (button == '=' && num2 !=0) //Hacer el cálculo si se presiona '='
+    {
+        domath(); //Llama a la subrutina domath()
+        break;
+    }
+    }
+    
+    while(1) // Limpiando la pantalla para el próximo cálculo
+    {
+    //Espera a que se presione la tecla '=' para que pueda restablecer el programa y comenzar de nuevo.
+    button = kpd.getKey();
+    if (button =='=')
+    {
+        lcd.clear();
+        lcd.setCursor(0,0);
+        num1=0;
+        num2=0;
+        total=0;
+        operation=0;
+        break;
+    }
+    }
+}                    
+            </div>
+    </div>
+</body>
+</html>
