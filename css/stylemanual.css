@@ -107,9 +107,32 @@ h2.man {
     border-bottom: 2px solid #fb8304;
 }
 
-ul.manual {
+img.imagen {
+    height: 300px;
+    width: auto;
+    margin-top: 10px;
+    margin-bottom: 30px;
+    float: left;
+}
+
+img.imagendisplay {
+    transform: rotate(90deg);
+    height: 300px;
+    width: auto;
+    margin-bottom: 10px;
+    margin-left: 70px;
+    float: left;
+}
+
+li.tabla {
+    font-weight: bold;
+    margin-bottom: 370px;
+    font-size: larger;
+}
+
+div.cuerpo {
     position: absolute;
+    text-align: left;
     margin-top: 100px;
     margin-left: 30px;
-    font-weight: bold;
 }
