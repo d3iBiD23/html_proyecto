@@ -94,7 +94,7 @@
                         Conectarem el keypad 4x4 al arduino als següents pins, 0-7.
                         <br>
                         <img class="imagen2" src="img/montaje4.jpg" alt="conectores keypad">
-                        <img class="imagen2" src="img/montaje5.jpg">
+                        <img class="imagen2" src="img/montaje5.jpg" alt="cables conectados al keypad">
                     </li>
                     <li class="numeracion">
                         El keypad 4x4 ha de quedar de la manera següent.
@@ -203,7 +203,7 @@ void loop()
     while(1) // Primer bucle. Composición del primer número. Hasta que el operador presionó
     {
     button = kpd.getKey(); // Botón de lectura
-    if (button >='0' && button <='9') // Si el usuario presionó un valor numérico, 1 carácter a la vez.
+    if (button >='0' && button &lt;='9') // Si el usuario presionó un valor numérico, 1 carácter a la vez.
     {
         lcd.clear();
         num1 = num1*10 + (button -'0'); //Composición del primer operando
@@ -224,7 +224,7 @@ void loop()
     while(1) // Segundo bucle. Introducción del segundo operando. Hasta que se presiona '='
     {
     button = kpd.getKey(); // Lectura de tecla
-    if (button >='0' && button <='9') // Obtener caracteres del teclado para el segundo número
+    if (button >='0' && button &lt;='9') // Obtener caracteres del teclado para el segundo número
     {
         num2 = num2*10 + (button -'0'); //Composición de la segunda operación
         lcd.setCursor(1,1); // Seleccione la segunda fila, la segunda columna en LCD
