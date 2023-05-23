@@ -104,6 +104,7 @@ h2.des {
     float: left;
     margin-left: 30px;
     border-bottom: 2px solid #fb8304;
+    word-spacing: 10px;
 }
 
 h3.materiales {
