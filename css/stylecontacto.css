@@ -110,3 +110,32 @@ h2.contacte {
 li.menu {
     color: white;
 }
+
+div.cuadrocontacto {
+    width: 450px;
+    padding: 1em;
+    background-color: #eae4da;
+    border: 5px solid #930b2b;
+    border-radius: 5px;
+    text-align: left;
+    margin-top: 130px;
+    margin-left: 30px;
+}
+
+.cuadrocontacto p {
+    margin-bottom: 10px;
+    display: block;
+    color: black;
+    font-weight: normal;
+}
+
+em {
+    color: #930b2b;
+    font-weight: bold;
+    font-style: normal;
+}
+
+a.inst {
+    color: black;
+    
+}
