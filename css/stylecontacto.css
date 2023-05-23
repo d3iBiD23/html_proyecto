@@ -106,3 +106,7 @@ h2.contacte {
     word-spacing: 5px;
     border-bottom: 2px solid #fb8304;
 }
+
+li.menu {
+    color: white;
+}
