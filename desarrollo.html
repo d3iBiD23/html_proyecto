@@ -118,142 +118,133 @@
                         <img class="imagen2" src="img/montaje9.jpg" alt="conexiones arduino">
                     </li>
                 </ol>
-            </div>
+            </div>&lt;&gt;
         <h3 class="codigotitulo">Codi Arduino</h3>
             <div class="terminal">
-#include &lt;Key.h&gt;
-#include &lt;Keypad.h&gt;
-#include &lt;Wire.h&gt;
-#include &lt;hd44780.h&gt;                       // main hd44780 header
-#include &lt;hd44780ioClass/hd44780_I2Cexp.h&gt; // i2c expander i/o class header
+#include &lt;Key.h&gt;                           // utilizada para trabajar con keypad
+#include &lt;Keypad.h&gt;                        // permite interactuar con un teclado matricial
+#include &lt;Wire.h&gt;                          // necesario para la comunicación I2c
+#include &lt;hd44780.h&gt;                       // soporte para pantallas LCD basadas en el controlador hd44780
+#include &lt;hd44780ioClass/hd44780_I2Cexp.h&gt; // extensión de la librería anterior para utilizar pantallas LCD con interfaz I2C
 
-//LCD I2C inicialización
-hd44780_I2Cexp lcd; // declarar objeto lcd: localización automática y chip expansor de configuración
-// geometría LCD
-const int LCD_COLS = 16;
-const int LCD_ROWS = 2;
-double num1,num2 ;
-double total;
-char operation,button;
-const byte ROWS = 4; // Four rows
-const byte COLS = 4; // Three columns
+// Inicialización LCD I2C
+hd44780_I2Cexp lcd; // Se declara objeto LCD de la clase hd44780_I2Cexp para controlar display mediante I2C
+// Geometría LCD
+const int LCD_COLS = 16; // 16 columnas
+const int LCD_ROWS = 2; // 2 filas
 
-// Definir el mapa de teclas
-char keys[ROWS][COLS] = {
-    {'1','2','3','+'},
-    {'4','5','6','-'},
-    {'7','8','9','*'},
-    {'=','0','%','/'}
+double num1, num2 ; // variables para almacenar los número utilizados en las operaciones
+double total; // variables para almacenar el resultado de las operaciones
+char operation, button; // variable para almacenar la operación seleccionada y el botón seleccionado
+const byte ROWS = 4; // definimos 4 filas
+const byte COLS = 5; // definimos 5 columnas
+
+// Definimos el mapa de teclas
+char keys[ROWS][COLS] = { // matriz que define las teclas disponibles en el keypad
+    {'1', '2', '3', '+'},
+    {'4', '5', '6', '-'},
+    {'7', '8', '9', '*'},
+    {'=', '0', '%', '/'}
 };
-byte rowPins[ROWS] = { 7, 6, 5, 4 };// Conecte el teclado ROW0, ROW1, ROW2 y ROW3 a estos pines Arduino.
-byte colPins[COLS] = { 3, 2, 1, 0 }; // Conecte el teclado COL0, COL1 y COL2 a estos pines Arduino.
+byte rowPins[ROWS] = { 7, 6, 5, 4 };// Conecta el keypad ROW0, ROW1, ROW2 y ROW3 a estos pines Arduino
+byte colPins[COLS] = { 3, 2, 1, 0 }; // Conecte el teclado COL0, COL1 y COL2 a estos pines Arduino
 
-Keypad kpd = Keypad( makeKeymap(keys), rowPins, colPins, ROWS, COLS ); //  Crear el teclado
-
-void domath() // Caso de interruptor simple para elegir qué operación hacer, según el botón presionado por el usuario.
+Keypad kpd = Keypad( makeKeymap(keys), rowPins, colPins, ROWS, COLS ); //  Crear el keypad para controlar el teclado con la configuración anterior
+void domath() // función para realizar operación seleccionada por el usuario y mostrar resultado en display
 {
-    switch(operation)
+    switch (operation)
     {
     case '+': // Suma
-        total = num1+num2;
+        total = num1 + num2;
         break;
-    case '-': // Resta 
-        total = num1-num2;
+    case '-': // Resta
+        total = num1 - num2;
         break;
-    case '/': // Division
-        total = num1/num2;
+    case '/': // División.
+        total = num1 / num2;
         break;
     case '*': // Multiplicación
-        total = num1*num2;
+        total = num1 * num2;
         break;
-        case '%': // Porcentaje
-        total = (int)num1%(int)num2;
+    case '%': // Operación Módulo
+        total = (int)num1 % (int)num2;
         break;
     }
-    // Basado en el caso seleccionado imprime resultado total y 
-    lcd.setCursor(0,1);
+
+
+    lcd.setCursor(0, 1);
     lcd.print('=');
-    lcd.setCursor(1,1);
+    lcd.setCursor(1, 1);
     lcd.print(total);
 }
 
-void setup() {
-int status;
-
-    // inicializar LCD con número de columnas y filas: 
-    // hd44780 devuelve un estado de begin() que se puede usar para determinar si la inicialización ha fallado.
-    status = lcd.begin(LCD_COLS, LCD_ROWS);
-    if(status) // el estado distinto de cero significa que no tuvo éxito
-    {
-    status = -status; // convertir el valor de estado negativo en un número positivo
-
-    // begin () ha fallado, así que parpadeeará el código de error usando el LED integrado si es posible
-    hd44780::fatalError(status); // does not return
-    }
-
-    // la inicialización fue exitosa, la luz de fondo debería estar encendida ahora
-    
-    // Imprimir un mensaje en la pantalla LCD
-    lcd.print("Calculator Davide");
+void setup() {                            // función para inicializar el programa
+    lcd.init();                             // se verifica que la inicialización ha sido exitosa
+    lcd.backlight();                        // y se muestra un mensaje de bienvenida en el display
+    lcd.setCursor(3, 0);
+    lcd.print("Calculator");
+    lcd.setCursor(5, 1);
+    lcd.print("Davide");
+    delay(2500);                            // pausa de 2.5 segundos
+    lcd.clear();                            // limpiar la pantalla
 }
 
-void loop()
+void loop() // esta función contiene el bucle principal del programa
 {
-    // Los bucles son convenientes para leer la pulsación de tecla desde el teclado
-    while(1) // Primer bucle. Composición del primer número. Hasta que el operador presionó
+    while (1) // Primer bucle, se encarga de capturar el primer número ingresado y mostrarlo por el display LCD
     {
-    button = kpd.getKey(); // Botón de lectura
-    if (button >='0' && button &lt;='9') // Si el usuario presionó un valor numérico, 1 carácter a la vez.
+    button = kpd.getKey(); // se espera a que el usuario seleccione una operación matemática
+    if (button >= '0' && button <= '9') // Si el usuario presionó un valor numérico, 1 carácter a la vez.
     {
         lcd.clear();
-        num1 = num1*10 + (button -'0'); //Composición del primer operando
-        lcd.setCursor(0,0); // Seleccione la primera fila en LCD
+        num1 = num1 * 10 + (button - '0'); // Composición del primer operando
+        lcd.setCursor(0, 0); // Seleccione el cursor en la primera fila en LCD
         lcd.print(num1); // Imprimir número num1
     }
-    
-    //Operador de entrada(
-    if (num1 !=0 && (button=='+' || button=='-' || button=='*' || button=='/' || button=='%'))
+
+    // Operación de entrada
+    if (num1 != 0 && (button == '+' || button == '-' || button == '*' || button == '/' || button == '%'))
     {
         operation = button; // operación recuerda qué operación matemática quiere el usuario en los números
-        lcd.setCursor(0,1); // coloque el cursor en la fila 2
-        lcd.print(operation); // Imprimir nuestra operación
+        lcd.setCursor(0, 1); // posiciona el cursor en la 2 fila
+        lcd.print(operation); // imprime en pantalla la operación
         break;
     }
-    }
-    
-    while(1) // Segundo bucle. Introducción del segundo operando. Hasta que se presiona '='
-    {
-    button = kpd.getKey(); // Lectura de tecla
-    if (button >='0' && button &lt;='9') // Obtener caracteres del teclado para el segundo número
-    {
-        num2 = num2*10 + (button -'0'); //Composición de la segunda operación
-        lcd.setCursor(1,1); // Seleccione la segunda fila, la segunda columna en LCD
-        lcd.print(num2); // Imprimir operación actual2
     }
 
-    if (button == '=' && num2 !=0) //Hacer el cálculo si se presiona '='
+    while (1) // esta función contiene el segundo bucle,
     {
-        domath(); //Llama a la subrutina domath()
+    button = kpd.getKey(); // Lectura de botón
+    if (button >= '0' && button <= '9') // Obteniendo caracteres del teclado para el segundo número
+    {
+        num2 = num2 * 10 + (button - '0'); //Composición de la segunda operación
+        lcd.setCursor(1, 1); // selecciona la segunda fila, segunda columna en el LCD
+        lcd.print(num2); // imprime en pantalla la operación 2
+    }
+
+    if (button == '=' && num2 != 0) //Hacer el cálculo si se presiona "="
+    {
+        domath(); // se llama a la función domath para realizar el cálculo y mostrar el resultado en el display
         break;
     }
     }
-    
-    while(1) // Limpiando la pantalla para el próximo cálculo
+
+    while (1) // limpia la pantalla para la siguiente operación
     {
-    //Espera a que se presione la tecla '=' para que pueda restablecer el programa y comenzar de nuevo.
+    // se espera a que presione la tecla "=" nuevamente para limpiar la pantalla y reinciar el programa.
     button = kpd.getKey();
-    if (button =='=')
+    if (button == '=')
     {
         lcd.clear();
-        lcd.setCursor(0,0);
-        num1=0;
-        num2=0;
-        total=0;
-        operation=0;
+        lcd.setCursor(0, 0);
+        num1 = 0;
+        num2 = 0;
+        total = 0;
+        operation = 0;
         break;
     }
     }
-}                    
+}      
             </div>
     </div>
 </body>
